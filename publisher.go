@@ -1,34 +1,45 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"log"
-	"time"
+	"net/http"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
-const key = "myJobQueue"
+type server struct {
+	nc *redis.Conn
+}
 
-func main() {
-
-	c := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+func (s server) createTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var body map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&body)
+	log.Println("Error Parseando JSON: ", err)
+	data, err := json.Marshal(body)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
 	})
 
-	fmt.Println("Waiting for jobs on jobQueue: ", key)
+	ctx := context.TODO()
 
-	go func() {
-		for {
-			result, err := c.BLPop(0*time.Second, key).Result()
+	errs := rdb.Publish(ctx, "mensajes", []byte(data)).Err()
 
-			if err != nil {
-				log.Fatal(err)
-			}
+	if errs != nil {
+		panic(err)
+	}
+}
 
-			fmt.Println("Executing job: ", result[1])
-		}
-	}()
-
-	select {}
+func main() {
+	var s server
+	http.HandleFunc("/", s.createTask)
+	fmt.Println("Server listening on port 8080...")
+	if errors := http.ListenAndServe(":8080", nil); errors != nil {
+		log.Fatal(errors)
+	}
 }
