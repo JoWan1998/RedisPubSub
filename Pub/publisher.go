@@ -17,6 +17,7 @@ type server struct {
 func (s server) createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var body map[string]interface{}
+	log.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&body)
 	log.Println("Error Parseando JSON: ", err)
 	data, err := json.Marshal(body)
@@ -25,7 +26,6 @@ func (s server) createTask(w http.ResponseWriter, r *http.Request) {
 		Password: "",
 		DB:       0,
 	})
-
 	ctx := context.TODO()
 
 	errs := rdb.Publish(ctx, "mychannel1", []byte(data)).Err()
