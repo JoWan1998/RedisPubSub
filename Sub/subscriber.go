@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/garyburd/redigo/redis"
 )
 
 type Service struct {
