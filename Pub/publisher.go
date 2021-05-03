@@ -14,7 +14,7 @@ type server struct {
 	nc *redis.Conn
 }
 
-func (s server) createTask(w http.ResponseWriter, r *http.Request) {
+func createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var body map[string]interface{}
 	log.Println(r.Body)
@@ -29,15 +29,13 @@ func (s server) createTask(w http.ResponseWriter, r *http.Request) {
 	ctx := context.TODO()
 
 	errs := rdb.Publish(ctx, "mychannel1", []byte(data)).Err()
-
 	if errs != nil {
 		panic(err)
 	}
 }
 
 func main() {
-	var s server
-	http.HandleFunc("/", s.createTask)
+	http.HandleFunc("/", createTask)
 	fmt.Println("Server listening on port 8080...")
 	if errors := http.ListenAndServe(":8080", nil); errors != nil {
 		log.Fatal(errors)
