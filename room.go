@@ -11,6 +11,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+/*
 var Redis *redis.Client
 
 func CreateRedisClient() {
@@ -23,17 +24,33 @@ func CreateRedisClient() {
 	Redis = redis
 	log.Println("Create connection...")
 }
+*/
 
 func publishMessage(message []byte) {
-	err := Redis.Publish(context.Background(), "mensajes", message).Err()
-
+	opt, err := redis.ParseURL("redis://localhost:6364/0")
 	if err != nil {
-		log.Println(err)
+		panic(err)
+	}
+
+	redis := redis.NewClient(opt)
+
+	errs := redis.Publish(context.TODO(), "mensaje", message).Err()
+
+	if errs != nil {
+		log.Println(errs)
 	}
 }
 
 func subscribeMessages() {
-	pubsub := Redis.Subscribe(context.Background(), "mensajes")
+
+	opt, err := redis.ParseURL("redis://localhost:6364/0")
+	if err != nil {
+		panic(err)
+	}
+
+	redis := redis.NewClient(opt)
+
+	pubsub := redis.Subscribe(context.Background(), "mensajes")
 	log.Println("subscriber listen on... ")
 	ch := pubsub.Channel()
 
@@ -58,7 +75,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	CreateRedisClient()
+	//CreateRedisClient()
 	http.HandleFunc("/", createTask)
 	fmt.Println("Server listening on port 8080...")
 	if errors := http.ListenAndServe(":8080", nil); errors != nil {
