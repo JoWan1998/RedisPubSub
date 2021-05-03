@@ -35,9 +35,10 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	if errs != nil {
 		panic(err)
 	}
+
 	duration := time.Since(requestAt)
 
-	fmt.Fprintf(w, "Task scheduled in %+v\nResponse: %v\n", duration, string(response.Data))
+	fmt.Fprintf(w, "Task scheduled in %+v", duration)
 }
 
 func main() {
