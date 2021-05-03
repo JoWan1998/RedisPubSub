@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"time"
 
 	"github.com/go-redis/redis/v7"
 )
@@ -17,8 +15,7 @@ func main() {
 	sub.subscribe("mensaje")
 	for {
 		msg = sub.get_message()
-		print(f"new message: {msg['data']}")
+		log.Println("Message: ", msg)
 	}
-		
 
 }
