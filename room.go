@@ -70,7 +70,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(body)
 	log.Println("Error Reading Body: ", err)
 	fmt.Println(string(data))
-	publishMessage(data)
+	publishMessage(body)
 	duration := time.Since(requestAt)
 	fmt.Fprintf(w, "Task scheduled in %+v", duration)
 }
