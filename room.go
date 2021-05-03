@@ -27,7 +27,7 @@ func CreateRedisClient() {
 */
 
 func publishMessage(message []byte) {
-	opt, err := redis.ParseURL("redis://localhost:6364/0")
+	opt, err := redis.ParseURL("redis://localhost:6379/0")
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +41,10 @@ func publishMessage(message []byte) {
 	}
 }
 
+/*
 func subscribeMessages() {
 
-	opt, err := redis.ParseURL("redis://localhost:6364/0")
+	opt, err := redis.ParseURL("redis://localhost:6379/0")
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +58,7 @@ func subscribeMessages() {
 	for msg := range ch {
 		log.Println("Mensaje: ", []byte(msg.Payload))
 	}
-}
+}*/
 
 func createTask(w http.ResponseWriter, r *http.Request) {
 
@@ -81,5 +82,4 @@ func main() {
 	if errors := http.ListenAndServe(":8080", nil); errors != nil {
 		log.Fatal(errors)
 	}
-	subscribeMessages()
 }
