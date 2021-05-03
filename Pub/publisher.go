@@ -50,6 +50,7 @@ func New(input *NewInput) *Service {
 func (s *Service) Publish(key string, value string) error {
 	conn := s.pool.Get()
 	conn.Do("PUBLISH", key, value)
+	log.Println("key: %s, data: %s", key, value)
 	return nil
 }
 
