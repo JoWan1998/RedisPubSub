@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -15,12 +16,14 @@ type server struct {
 }
 
 func createTask(w http.ResponseWriter, r *http.Request) {
+	requestAt := time.Now()
 	w.Header().Set("Content-Type", "application/json")
 	var body map[string]interface{}
-	log.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&body)
 	log.Println("Error Parseando JSON: ", err)
 	data, err := json.Marshal(body)
+	log.Println("Error Reading Body: ", err)
+	fmt.Println(string(data))
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
@@ -32,6 +35,9 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	if errs != nil {
 		panic(err)
 	}
+	duration := time.Since(requestAt)
+
+	fmt.Fprintf(w, "Task scheduled in %+v\nResponse: %v\n", duration, string(response.Data))
 }
 
 func main() {
