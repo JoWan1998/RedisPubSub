@@ -7,52 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/go-redis/redis/v7"
 )
-
-type Service struct {
-	pool *redis.Pool
-	conn redis.Conn
-}
-
-// NewInput input for constructor
-type NewInput struct {
-	RedisURL string
-}
-
-// New return new service
-func New(input *NewInput) *Service {
-	if input == nil {
-		log.Fatal("input is required")
-	}
-	var redispool *redis.Pool
-	redispool = &redis.Pool{
-		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", input.RedisURL)
-		},
-	}
-
-	// Get a connection
-	conn := redispool.Get()
-	defer conn.Close()
-	// Test the connection
-	_, err := conn.Do("PING")
-	if err != nil {
-		log.Fatalf("can't connect to the redis database, got error:\n%v", err)
-	}
-
-	return &Service{
-		pool: redispool,
-		conn: conn,
-	}
-}
-
-func (s *Service) Publish(key string, value string) error {
-	conn := s.pool.Get()
-	conn.Do("PUBLISH", key, value)
-	log.Println("key: %s, data: %s", key, value)
-	return nil
-}
 
 func createTask(w http.ResponseWriter, r *http.Request) {
 
@@ -65,8 +21,8 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	log.Println("Error Reading Body: ", err)
 	fmt.Println(string(data))
 
-	svc := New(&NewInput{
-		RedisURL: "127.0.0.1:6379",
+	svc := redis.NewClient(&redis.Options{
+		Addr: "127.0.0.1:6379",
 	})
 
 	errs := svc.Publish("mensaje", string(data))
