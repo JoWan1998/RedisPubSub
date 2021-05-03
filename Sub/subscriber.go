@@ -68,7 +68,7 @@ func main() {
 	svc := New(&NewInput{
 		RedisURL: "127.0.0.1:6379",
 	})
-	channel := fmt.Sprintf("test/%s", time.Now().Add(10*time.Second).String())
+	channel := fmt.Sprintf("mensaje", time.Now().Add(10*time.Second).String())
 	val := time.Now().String()
 
 	reply := make(chan []byte)

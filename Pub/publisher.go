@@ -69,7 +69,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 		RedisURL: "127.0.0.1:6379",
 	})
 
-	errs := svc.Publish("test/foo", string(data))
+	errs := svc.Publish("mensaje", string(data))
 
 	if errs != nil {
 		log.Fatal(errs)
