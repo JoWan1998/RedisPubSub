@@ -69,7 +69,6 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	log.Println("Error Parseando JSON: ", err)
 	body["way"] = "Redis Pub/Sub"
 	data, err := json.Marshal(body)
-
 	log.Println("Error Reading Body: ", err)
 	fmt.Println(string(data))
 	publishMessage(data)
