@@ -80,7 +80,7 @@ func main() {
 	//CreateRedisClient()
 	http.HandleFunc("/", createTask)
 	fmt.Println("Server listening on port 8080...")
-	if errors := http.ListenAndServe(":80", nil); errors != nil {
+	if errors := http.ListenAndServe(":8080", nil); errors != nil {
 		log.Fatal(errors)
 	}
 }
